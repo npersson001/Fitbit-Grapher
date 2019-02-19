@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ARMIClient implements RMISender {
+public class ARMIClientObj implements RMISender {
 	public RMIServerObj server;
 	public ClientGrapher client;
 	
-	public ARMIClient(ClientGrapher c) {
+	public ARMIClientObj(ClientGrapher c) {
 		client = c;
 	}
 	
@@ -21,6 +21,7 @@ public class ARMIClient implements RMISender {
 	
 	public void startSending(){
 		System.out.println("*** Begin Transmitting Data! ***");
-		client.sendData();
+//		client.sendData();
+		client.startSending = true;
 	}
 }

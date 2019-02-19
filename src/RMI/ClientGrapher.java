@@ -37,6 +37,7 @@ public class ClientGrapher extends JPanel implements Runnable{
 	private Map<String, List<Integer>> heartBeats = new HashMap<>();
 	final JScrollPane pane;
 	final Color[] clientColors = {Color.RED, Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
+	public boolean startSending = false;
 	
 	public ClientGrapher(String name, String json) {
 		clientName = name;
@@ -123,7 +124,7 @@ public class ClientGrapher extends JPanel implements Runnable{
 		try {
 			Registry rmiRegistry = LocateRegistry.getRegistry(aRegistryHost, aRegistryPort);
 			rmiServerObj = (RMIServerObj) rmiRegistry.lookup(RegistryServer.SENDER_NAME);
-			rmiSender = new ARMIClient(this);
+			rmiSender = new ARMIClientObj(this);
 			UnicastRemoteObject.exportObject(rmiSender, 0);
 			rmiServerObj.connect(rmiSender);
 			System.out.println("*** Connected to Server! ***");
@@ -134,11 +135,12 @@ public class ClientGrapher extends JPanel implements Runnable{
 	
 	public void sendData(){
 		List<Long> data = this.createDataset();
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			e1.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(5000);
+//		} catch (InterruptedException e1) {
+//			e1.printStackTrace();
+//		}
+		while(!startSending){}
 		for(Long l : data){
 			try {
 				this.rmiServerObj.receiveMessage(clientName + ":" + l);
@@ -148,21 +150,19 @@ public class ClientGrapher extends JPanel implements Runnable{
 		}
 	}
 	
+	public void run2(){
+		this.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
+		this.sendData();
+	}
+	
 	public void run(){
 		this.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
+		this.sendData();
 	}
 
 	public static void main(String[] args) {
 		ClientGrapher client = new ClientGrapher("client_default", "heart_rate-2019-01-19.json");
-		List<Long> data = client.createDataset();
 		client.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-		
-		for(Long l : data){
-			try {
-				client.rmiServerObj.receiveMessage("client_default" + ":" + l);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
+		client.sendData();
 	}
 }

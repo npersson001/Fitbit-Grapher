@@ -14,6 +14,11 @@ public class ClientLauncher2 {
 
 	public static void main(String[] args){
 		ClientGrapher client2 = new ClientGrapher("client2", JSON2);
-		client2.run();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		client2.run2();
 	}
 }

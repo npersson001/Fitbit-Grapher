@@ -12,9 +12,13 @@ public class ClientLauncher1 {
 	public static final String JSON2 = "heart_rate-2019-01-18.json";
 	public static final String JSON3 = "heart_rate-2019-01-19.json";
 
-	public static void main(String[] args) throws InterruptedException{
+	public static void main(String[] args){
 		ClientGrapher client1 = new ClientGrapher("client1", JSON1);
-		Thread.sleep(5000);
-		client1.run();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		client1.run2();
 	}
 }
