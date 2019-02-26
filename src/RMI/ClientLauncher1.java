@@ -19,6 +19,6 @@ public class ClientLauncher1 {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		client1.run2();
+		client1.run();
 	}
 }

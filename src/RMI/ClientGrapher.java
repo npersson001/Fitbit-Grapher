@@ -150,11 +150,6 @@ public class ClientGrapher extends JPanel implements Runnable{
 		}
 	}
 	
-	public void run2(){
-		this.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-		this.sendData();
-	}
-	
 	public void run(){
 		this.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
 		this.sendData();
