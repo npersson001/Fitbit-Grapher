@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.FileReader;
+import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -29,15 +31,18 @@ import org.json.simple.parser.JSONParser;
 /**
  * 
  */
-public class ClientGrapher extends JPanel implements Runnable{
-	private RMIServerObj rmiServerObj;
-	private RMISender rmiSender;
+public class ClientGrapher extends JPanel{
+	private ClientSender clientSender;
 	public String clientName;
 	private String jsonFile;
 	private Map<String, List<Integer>> heartBeats = new HashMap<>();
 	final JScrollPane pane;
 	final Color[] clientColors = {Color.RED, Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
 	public boolean startSending = false;
+	
+	private AClientSender server;
+    public LinkedBlockingQueue<String> messages;
+    private Socket socket;
 	
 	public ClientGrapher(String name, String json) {
 		clientName = name;
@@ -56,7 +61,7 @@ public class ClientGrapher extends JPanel implements Runnable{
 	public void updateChart(String message){
 		String[] messageArr = message.split(":");
 		String sendingClient = messageArr[0];
-		int heartBeat = Integer.parseInt(messageArr[1]);
+		int heartBeat = Integer.parseInt(messageArr[2]);
 		if(!heartBeats.containsKey(sendingClient)){
 			heartBeats.put(sendingClient, new ArrayList<Integer>());
 		}
@@ -120,44 +125,28 @@ public class ClientGrapher extends JPanel implements Runnable{
 	}
 	
 	// method that sets up simulation and connection to server using RMI
-	public void initializeRMI(String aRegistryHost, int aRegistryPort){
+	public void initializeConnection(String aRegistryHost, int aRegistryPort){
+		messages = new LinkedBlockingQueue<String>();
 		try {
-			Registry rmiRegistry = LocateRegistry.getRegistry(aRegistryHost, aRegistryPort);
-			rmiServerObj = (RMIServerObj) rmiRegistry.lookup(RegistryServer.SENDER_NAME);
-			rmiSender = new ARMIClientObj(this);
-			UnicastRemoteObject.exportObject(rmiSender, 0);
-			rmiServerObj.connect(rmiSender);
-			System.out.println("*** Connected to Server! ***");
+			Socket socket = new Socket(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
+			clientSender = new AClientSender(this, socket, messages);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		Thread messageHandler = new Thread(new ClientMessageHandlingThread(this, messages));
+		messageHandler.start();
 	}
 	
 	public void sendData(){
 		List<Long> data = this.createDataset();
-//		try {
-//			Thread.sleep(5000);
-//		} catch (InterruptedException e1) {
-//			e1.printStackTrace();
-//		}
-		while(!startSending){}
-		for(Long l : data){
-			try {
-				this.rmiServerObj.receiveMessage(clientName + ":" + l);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+		for(int i = 0; i < data.size(); i++){
+			clientSender.sendMessage(clientName + ":" + i + ":" + data.get(i));
 		}
-	}
-	
-	public void run(){
-		this.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-		this.sendData();
 	}
 
 	public static void main(String[] args) {
 		ClientGrapher client = new ClientGrapher("client_default", "heart_rate-2019-01-19.json");
-		client.initializeRMI(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-		client.sendData();
+		client.initializeConnection(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);	
 	}
 }

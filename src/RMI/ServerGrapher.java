@@ -4,42 +4,54 @@
  */
 package RMI;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * 
  */
-public class ServerGrapher implements Runnable{
-	public RMIServerObj rmiServerObj;
-	public final int TOTAL_CLIENTS = 2;
+public class ServerGrapher{
+	private ArrayList<ServerSender> clientList;
+    private LinkedBlockingQueue<String> inMessages;
+    private LinkedBlockingQueue<String> outMessages;
+    private ServerSocket serverSocket;
 	
 	public ServerGrapher(){
-		System.out.println("*** Server Started! ***");
+		System.out.println("*** Server Starting! ***");
 	}
     
-	// method to set up server for RMI
-	public void initializeRMI(int aRegistryPort, String aRegistryHost){
-		try {
-			Registry rmiRegistry = LocateRegistry.getRegistry(aRegistryHost, aRegistryPort);
-			RMIServerObj rmiServ = new ARMIServerObj(this);
-			rmiServerObj = rmiServ;
-			UnicastRemoteObject.exportObject(rmiServerObj, 0);
-			rmiRegistry.rebind(RegistryServer.SENDER_NAME, rmiServerObj);
-			System.out.println("*** Remote Object Registered! ***");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void run(){
-		this.initializeRMI(RegistryServer.REGISTRY_PORT_NAME, RegistryServer.REGISTRY_HOST_NAME);
+	public void initializeConnections(int aRegistryPort, String aRegistryHost){
+		clientList = new ArrayList<ServerSender>();
+        inMessages = new LinkedBlockingQueue<String>();
+        outMessages = new LinkedBlockingQueue<String>();
+        try {
+			serverSocket = new ServerSocket(aRegistryPort);
+		} catch (IOException e) { e.printStackTrace();}
+		
+        Thread connectingThread = new Thread(new ServerConnectingThread(serverSocket, inMessages, clientList));
+		connectingThread.start();
+		
+		Thread messageHandler = new Thread(new ServerMessageHandlingThread(inMessages, outMessages));
+		messageHandler.start();
+		
+		Thread broadcastThread = new Thread(new ServerBroadcastingThread(outMessages, clientList));
+		broadcastThread.start();
 	}
 		
-	public static void main(String[] args){
+	public static void main(String[] args) throws Exception{
 		ServerGrapher server = new ServerGrapher();
-		server.initializeRMI(RegistryServer.REGISTRY_PORT_NAME, RegistryServer.REGISTRY_HOST_NAME);
+		server.initializeConnections(RegistryServer.REGISTRY_PORT_NAME, RegistryServer.REGISTRY_HOST_NAME);
 	}
 	
 }

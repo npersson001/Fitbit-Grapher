@@ -13,12 +13,7 @@ public class ClientLauncher2 {
 	public static final String JSON3 = "heart_rate-2019-01-19.json";
 
 	public static void main(String[] args){
-		ClientGrapher client2 = new ClientGrapher("client2", JSON2);
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		client2.run();
+		ClientGrapher client = new ClientGrapher("client_2", JSON2);
+		client.initializeConnection(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
 	}
 }
