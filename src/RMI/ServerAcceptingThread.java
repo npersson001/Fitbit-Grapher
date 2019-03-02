@@ -10,17 +10,21 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+
 /**
  * 
  */
-public class ServerConnectingThread implements Runnable{
+public class ServerAcceptingThread implements Runnable{
 	private ArrayList<ServerSender> clientList;
 	private ServerSocket serverSocket;
-	private LinkedBlockingQueue<String> messages;
+	private LinkedBlockingQueue<JSONObject> inMessages;
+	private LinkedBlockingQueue<JSONObject> outMessages;
 	
-	public ServerConnectingThread(ServerSocket socket, LinkedBlockingQueue<String> m, ArrayList<ServerSender> c){
+	public ServerAcceptingThread(ServerSocket socket, LinkedBlockingQueue<JSONObject> inM, LinkedBlockingQueue<JSONObject> outM, ArrayList<ServerSender> c){
 		serverSocket = socket;
-		messages = m;
+		inMessages = inM;
+		outMessages = outM;
 		clientList = c;
 	}
 	
@@ -31,12 +35,11 @@ public class ServerConnectingThread implements Runnable{
 		while(true){
             try{
                 Socket socket = serverSocket.accept();
-                clientList.add(new AServerSender(socket, messages));
-                Thread.sleep(1000); // is this an acceptable way to deal with the last client not being done initializing
+                clientList.add(new AServerSender(socket, inMessages));
                 if(++connected == RegistryServer.TOTAL_CLIENTS){
-                	for(ServerSender client : clientList){
-                		client.sendMessage(RegistryServer.START_SENDING);
-                	}
+            		JSONObject json = new JSONObject();
+            		json.put("server_message", RegistryServer.START_SENDING);
+                	outMessages.put(json);
                 }
             }
             catch(IOException | InterruptedException e){ e.printStackTrace(); }

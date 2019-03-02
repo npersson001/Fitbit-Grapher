@@ -6,14 +6,16 @@ package RMI;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+
 /**
  * 
  */
 public class ServerMessageHandlingThread implements Runnable{
-	private LinkedBlockingQueue<String> inMessages;
-	private LinkedBlockingQueue<String> outMessages;
+	private LinkedBlockingQueue<JSONObject> inMessages;
+	private LinkedBlockingQueue<JSONObject> outMessages;
 	
-	public ServerMessageHandlingThread(LinkedBlockingQueue<String> in, LinkedBlockingQueue<String> out){
+	public ServerMessageHandlingThread(LinkedBlockingQueue<JSONObject> in, LinkedBlockingQueue<JSONObject> out){
 		inMessages = in;
 		outMessages = out;
 	}
@@ -23,7 +25,7 @@ public class ServerMessageHandlingThread implements Runnable{
 		System.out.println("*** Server Message Handling Thread Started! ***");
 		while(true){
             try{
-                String message = inMessages.take();
+                JSONObject message = inMessages.take();
                 System.out.println("*** Server Received: " + message + " ***");
                 outMessages.put(message);
             }

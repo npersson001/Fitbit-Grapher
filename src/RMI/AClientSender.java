@@ -1,6 +1,8 @@
 package RMI;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.Remote;
@@ -11,38 +13,49 @@ import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
+
 public class AClientSender implements ClientSender {
 	public ServerSender server;
 	public ClientGrapher client;
-	private Scanner in;
-	private PrintWriter out;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
 	private Socket socket;
-	private LinkedBlockingQueue<String> messages;
+	private LinkedBlockingQueue<JSONObject> messages;
 	
-	public AClientSender(ClientGrapher c, Socket s, LinkedBlockingQueue<String> m) {
+	public AClientSender(ClientGrapher c, Socket s, LinkedBlockingQueue<JSONObject> m) {
 		client = c;
 		socket = s;
 		messages = m;
+		
+		try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		Thread readingThread = new Thread(this);
 		readingThread.start();
 	}
 	
-	public void sendMessage(String message){
-		out.println(message);
+	public void sendMessage(JSONObject message){
+		try {
+			out.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void run() {
 		System.out.println("*** Connected to Server! ***");
 		try {
-            in = new Scanner(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(), true);
             while (true) {
-                String message = in.nextLine();
+                JSONObject message = (JSONObject) in.readObject();
                 messages.put(message);
             }
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

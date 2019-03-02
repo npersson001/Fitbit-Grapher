@@ -18,13 +18,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+
 /**
  * 
  */
 public class ServerGrapher{
 	private ArrayList<ServerSender> clientList;
-    private LinkedBlockingQueue<String> inMessages;
-    private LinkedBlockingQueue<String> outMessages;
+    private LinkedBlockingQueue<JSONObject> inMessages;
+    private LinkedBlockingQueue<JSONObject> outMessages;
     private ServerSocket serverSocket;
 	
 	public ServerGrapher(){
@@ -33,14 +35,14 @@ public class ServerGrapher{
     
 	public void initializeConnections(int aRegistryPort, String aRegistryHost){
 		clientList = new ArrayList<ServerSender>();
-        inMessages = new LinkedBlockingQueue<String>();
-        outMessages = new LinkedBlockingQueue<String>();
+        inMessages = new LinkedBlockingQueue<JSONObject>();
+        outMessages = new LinkedBlockingQueue<JSONObject>();
         try {
 			serverSocket = new ServerSocket(aRegistryPort);
 		} catch (IOException e) { e.printStackTrace();}
 		
-        Thread connectingThread = new Thread(new ServerConnectingThread(serverSocket, inMessages, clientList));
-		connectingThread.start();
+        Thread acceptingThread = new Thread(new ServerAcceptingThread(serverSocket, inMessages, outMessages, clientList));
+		acceptingThread.start();
 		
 		Thread messageHandler = new Thread(new ServerMessageHandlingThread(inMessages, outMessages));
 		messageHandler.start();

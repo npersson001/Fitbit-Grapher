@@ -2,6 +2,8 @@ package RMI;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -13,18 +15,27 @@ import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import org.json.simple.JSONObject;
+
 public class AServerSender implements ServerSender{
 //	private List<RMISender> clients = new ArrayList<>();
 	ServerGrapher server; 
 	private Socket socket;
-	private Scanner in;
-	private PrintWriter out;
-	private LinkedBlockingQueue<String> messages;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
+	private LinkedBlockingQueue<JSONObject> messages;
 	
-	public AServerSender(Socket so, LinkedBlockingQueue<String> m){
+	public AServerSender(Socket so, LinkedBlockingQueue<JSONObject> m){
 		socket = so;
 		messages = m;
 		
+		try {
+			out = new ObjectOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
 		Thread readingThread = new Thread(this);
 		readingThread.start();
 	}
@@ -32,10 +43,8 @@ public class AServerSender implements ServerSender{
 	public void run(){
 		System.out.println("*** Connected: " + socket + " ***");
 		try {
-            in = new Scanner(socket.getInputStream());
-            out = new PrintWriter(socket.getOutputStream(), true);
             while (true) {
-                String message = in.nextLine();
+                JSONObject message = (JSONObject) in.readObject();
                 messages.put(message);
             }
         } catch (Exception e) {
@@ -46,7 +55,11 @@ public class AServerSender implements ServerSender{
         }
 	}
 	
-	public void sendMessage(String message){
-		out.println(message);
+	public void sendMessage(JSONObject message){
+		try {
+			out.writeObject(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

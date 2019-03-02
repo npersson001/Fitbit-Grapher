@@ -6,14 +6,16 @@ package RMI;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+
 /**
  * 
  */
 public class ClientMessageHandlingThread implements Runnable{
-	private LinkedBlockingQueue<String> messages;
+	private LinkedBlockingQueue<JSONObject> messages;
 	private ClientGrapher client;
 	
-	public ClientMessageHandlingThread(ClientGrapher c, LinkedBlockingQueue<String> m){
+	public ClientMessageHandlingThread(ClientGrapher c, LinkedBlockingQueue<JSONObject> m){
 		client = c;
 		messages = m;
 	}
@@ -23,9 +25,9 @@ public class ClientMessageHandlingThread implements Runnable{
 		System.out.println("*** Client Message Handling Thread Started! ***");
 		while(true){
             try{
-                String message = messages.take();
+                JSONObject message = messages.take();
                 System.out.println("*** Client Received: " + message + " ***");
-                if(message.equals(RegistryServer.START_SENDING)){
+                if(message.get("server_message") != null && message.get("server_message").equals(RegistryServer.START_SENDING)){
                 	client.sendData();
                 }
                 else{

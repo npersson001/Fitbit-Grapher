@@ -8,14 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+
 /**
  * 
  */
 public class ServerBroadcastingThread implements Runnable{
-private LinkedBlockingQueue<String> outMessages;
+private LinkedBlockingQueue<JSONObject> outMessages;
 private List<ServerSender> clientList;
 	
-	public ServerBroadcastingThread(LinkedBlockingQueue<String> serverOutMessageQueue, List<ServerSender> clients ){
+	public ServerBroadcastingThread(LinkedBlockingQueue<JSONObject> serverOutMessageQueue, List<ServerSender> clients ){
 		outMessages = serverOutMessageQueue;
 		clientList = clients;
 	}
@@ -25,7 +27,7 @@ private List<ServerSender> clientList;
 		System.out.println("*** Server Broadcasting Thread Started! ***");
 		while(true){
             try{
-                String message = outMessages.take();
+                JSONObject message = outMessages.take();
                 for(ServerSender clientConnection : clientList){
                 	clientConnection.sendMessage(message);
                 }

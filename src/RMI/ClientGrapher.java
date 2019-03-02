@@ -41,7 +41,7 @@ public class ClientGrapher extends JPanel{
 	public boolean startSending = false;
 	
 	private AClientSender server;
-    public LinkedBlockingQueue<String> messages;
+    public LinkedBlockingQueue<JSONObject> messages;
     private Socket socket;
 	
 	public ClientGrapher(String name, String json) {
@@ -58,10 +58,13 @@ public class ClientGrapher extends JPanel{
 		pane.revalidate();
 	}
 	
-	public void updateChart(String message){
-		String[] messageArr = message.split(":");
-		String sendingClient = messageArr[0];
-		int heartBeat = Integer.parseInt(messageArr[2]);
+	public void updateChart(JSONObject message){
+//		String[] messageArr = message.split(":");
+//		String sendingClient = messageArr[0];
+//		int heartBeat = Integer.parseInt(messageArr[2]);
+		String sendingClient = (String) message.get("client");
+		JSONObject value = (JSONObject) message.get("value");
+		int heartBeat = ((Long) value.get("bpm")).intValue();
 		if(!heartBeats.containsKey(sendingClient)){
 			heartBeats.put(sendingClient, new ArrayList<Integer>());
 		}
@@ -102,7 +105,7 @@ public class ClientGrapher extends JPanel{
 		pane.revalidate();
 	}
 	
-	private List<Long> createDataset(){
+	private JSONArray createDataset(){
 		// get json information 
 		JSONParser parser = new JSONParser();
 		JSONArray array = null;
@@ -110,23 +113,23 @@ public class ClientGrapher extends JPanel{
 			array = (JSONArray) parser.parse(new FileReader(jsonFile));
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
-		
-		List<Long> list = new ArrayList<>();
-		for (Object o : array){
-			JSONObject dataPoint = (JSONObject) o;
-			String dateTime = (String) dataPoint.get("dateTime");
-			JSONObject value = (JSONObject) dataPoint.get("value");
-			long bpm = (long) value.get("bpm");
-			list.add(bpm);
 		}
 		
-		return list;
+//		List<Long> list = new ArrayList<>();
+//		for (Object o : array){
+//			JSONObject dataPoint = (JSONObject) o;
+//			String dateTime = (String) dataPoint.get("dateTime");
+//			JSONObject value = (JSONObject) dataPoint.get("value");
+//			long bpm = (long) value.get("bpm");
+//			list.add(bpm);
+//		}
+		
+		return array;
 	}
 	
 	// method that sets up simulation and connection to server using RMI
 	public void initializeConnection(String aRegistryHost, int aRegistryPort){
-		messages = new LinkedBlockingQueue<String>();
+		messages = new LinkedBlockingQueue<JSONObject>();
 		try {
 			Socket socket = new Socket(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
 			clientSender = new AClientSender(this, socket, messages);
@@ -139,9 +142,11 @@ public class ClientGrapher extends JPanel{
 	}
 	
 	public void sendData(){
-		List<Long> data = this.createDataset();
-		for(int i = 0; i < data.size(); i++){
-			clientSender.sendMessage(clientName + ":" + i + ":" + data.get(i));
+		JSONArray data = this.createDataset();
+		for(Object o : data){
+			JSONObject dataPoint = (JSONObject) o;
+			dataPoint.put("client", clientName);
+			clientSender.sendMessage(dataPoint);
 		}
 	}
 
