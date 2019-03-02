@@ -11,10 +11,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.io.FileReader;
 import java.net.Socket;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,11 +35,11 @@ public class ClientGrapher extends JPanel{
 	final JScrollPane pane;
 	final Color[] clientColors = {Color.RED, Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
 	public boolean startSending = false;
-	
 	private ClientSender server;
     public LinkedBlockingQueue<JSONObject> messages;
     private Socket socket;
 	
+    // constructor for client
 	public ClientGrapher(String name, String json) {
 		clientName = name;
 		jsonFile = json;
@@ -58,10 +54,8 @@ public class ClientGrapher extends JPanel{
 		pane.revalidate();
 	}
 	
+	// method to update the list of heartbeats and call repaint to draw swing chart
 	public void updateChart(JSONObject message){
-//		String[] messageArr = message.split(":");
-//		String sendingClient = messageArr[0];
-//		int heartBeat = Integer.parseInt(messageArr[2]);
 		String sendingClient = (String) message.get("client");
 		JSONObject value = (JSONObject) message.get("value");
 		int heartBeat = ((Long) value.get("bpm")).intValue();
@@ -72,10 +66,12 @@ public class ClientGrapher extends JPanel{
 		repaint();
 	}
 	
+	// helper method to adjust the y value for visually pleasing swing chart
 	public int adjustY(int y, int numY){
 		return (2 * this.getHeight() / 3) - y;
 	}
 	
+	// method called on repaint to draw the jframe 
 	@Override
 	public void paintComponent(Graphics g){
 		super.paintComponent(g);
@@ -105,8 +101,8 @@ public class ClientGrapher extends JPanel{
 		pane.revalidate();
 	}
 	
+	// method called to create the dataset from the given Fitbit file
 	private JSONArray createDataset(){
-		// get json information 
 		JSONParser parser = new JSONParser();
 		JSONArray array = null;
 		try {
@@ -114,33 +110,25 @@ public class ClientGrapher extends JPanel{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-//		List<Long> list = new ArrayList<>();
-//		for (Object o : array){
-//			JSONObject dataPoint = (JSONObject) o;
-//			String dateTime = (String) dataPoint.get("dateTime");
-//			JSONObject value = (JSONObject) dataPoint.get("value");
-//			long bpm = (long) value.get("bpm");
-//			list.add(bpm);
-//		}
-		
 		return array;
 	}
 	
-	// method that sets up simulation and connection to server using RMI
+	// method that sets up socket connection on the client side
 	public void initializeConnection(String aRegistryHost, int aRegistryPort){
 		messages = new LinkedBlockingQueue<JSONObject>();
 		try {
 			Socket socket = new Socket(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-			clientSender = new ClientSender(this, socket, messages);
+			clientSender = new ClientSender(this, socket, messages); // spawns thread that has the socket connection, enqueues messages
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		// spawn thread to read from message queue
 		Thread messageHandler = new Thread(new ClientMessageHandlingThread(this, messages));
 		messageHandler.start();
 	}
 	
+	// method called to send client data to the server
 	public void sendData(){
 		JSONArray data = this.createDataset();
 		for(Object o : data){

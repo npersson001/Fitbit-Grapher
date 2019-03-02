@@ -23,6 +23,7 @@ public class ClientSender implements Runnable{
 	private Socket socket;
 	private LinkedBlockingQueue<JSONObject> messages;
 	
+	// constructor for object responsible for capturing incoming messages from server and enqueueing them
 	public ClientSender(ClientGrapher c, Socket s, LinkedBlockingQueue<JSONObject> m) {
 		client = c;
 		socket = s;
@@ -39,6 +40,7 @@ public class ClientSender implements Runnable{
 		readingThread.start();
 	}
 	
+	// method for sending JSON objects over the socket connection
 	public void sendMessage(JSONObject message){
 		try {
 			out.writeObject(message);
@@ -51,9 +53,10 @@ public class ClientSender implements Runnable{
 	public void run() {
 		System.out.println("*** Connected to Server! ***");
 		try {
+			// listen continuously for incoming JSON objects over the socket stream
             while (true) {
                 JSONObject message = (JSONObject) in.readObject();
-                messages.put(message);
+                messages.put(message); // put messages on the queue for message handling thread to deal with
             }
 		} catch (IOException | InterruptedException | ClassNotFoundException e) {
 			e.printStackTrace();

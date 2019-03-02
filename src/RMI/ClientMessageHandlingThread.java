@@ -15,6 +15,7 @@ public class ClientMessageHandlingThread implements Runnable{
 	private LinkedBlockingQueue<JSONObject> messages;
 	private ClientGrapher client;
 	
+	// constructor for thread that reads messages incoming from the server
 	public ClientMessageHandlingThread(ClientGrapher c, LinkedBlockingQueue<JSONObject> m){
 		client = c;
 		messages = m;
@@ -25,8 +26,10 @@ public class ClientMessageHandlingThread implements Runnable{
 		System.out.println("*** Client Message Handling Thread Started! ***");
 		while(true){
             try{
-                JSONObject message = messages.take();
+                JSONObject message = messages.take(); // blocking call, waits for actual message to be there
                 System.out.println("*** Client Received: " + message + " ***");
+                
+                // check if first message from server to start sending, otherwise just update the dataset
                 if(message.get("server_message") != null && message.get("server_message").equals(RegistryServer.START_SENDING)){
                 	client.sendData();
                 }
