@@ -35,7 +35,7 @@ public class ServerAcceptingThread implements Runnable{
 		while(true){
             try{
                 Socket socket = serverSocket.accept();
-                clientList.add(new AServerSender(socket, inMessages));
+                clientList.add(new ServerSender(socket, inMessages));
                 if(++connected == RegistryServer.TOTAL_CLIENTS){
             		JSONObject json = new JSONObject();
             		json.put("server_message", RegistryServer.START_SENDING);

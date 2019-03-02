@@ -40,7 +40,7 @@ public class ClientGrapher extends JPanel{
 	final Color[] clientColors = {Color.RED, Color.BLACK, Color.GREEN, Color.BLUE, Color.YELLOW, Color.ORANGE};
 	public boolean startSending = false;
 	
-	private AClientSender server;
+	private ClientSender server;
     public LinkedBlockingQueue<JSONObject> messages;
     private Socket socket;
 	
@@ -132,7 +132,7 @@ public class ClientGrapher extends JPanel{
 		messages = new LinkedBlockingQueue<JSONObject>();
 		try {
 			Socket socket = new Socket(RegistryServer.REGISTRY_HOST_NAME, RegistryServer.REGISTRY_PORT_NAME);
-			clientSender = new AClientSender(this, socket, messages);
+			clientSender = new ClientSender(this, socket, messages);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
