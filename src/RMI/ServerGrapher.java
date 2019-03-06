@@ -33,6 +33,7 @@ public class ServerGrapher{
 		System.out.println("*** Server Starting! ***");
 	}
     
+	// method to setup all threads on the server for handling connections and messages
 	public void initializeConnections(int aRegistryPort, String aRegistryHost){
 		clientList = new ArrayList<ServerSender>();
         inMessages = new LinkedBlockingQueue<JSONObject>();
@@ -41,12 +42,15 @@ public class ServerGrapher{
 			serverSocket = new ServerSocket(aRegistryPort);
 		} catch (IOException e) { e.printStackTrace();}
 		
+        // start thread to accepting incoming connection requests from clients
         Thread acceptingThread = new Thread(new ServerAcceptingThread(serverSocket, inMessages, outMessages, clientList));
 		acceptingThread.start();
 		
+		// start thread for taking messages off of incoming queue and onto outgoing queue
 		Thread messageHandler = new Thread(new ServerMessageHandlingThread(inMessages, outMessages));
 		messageHandler.start();
 		
+		// start thread for taking messages off of outgoing queue and broadcasting them to all clients
 		Thread broadcastThread = new Thread(new ServerBroadcastingThread(outMessages, clientList));
 		broadcastThread.start();
 	}

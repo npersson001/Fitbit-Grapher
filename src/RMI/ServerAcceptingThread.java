@@ -28,6 +28,7 @@ public class ServerAcceptingThread implements Runnable{
 		clientList = c;
 	}
 	
+	// run method for thread to create a ServerSender object for each client connection and give it the socket
 	@Override
 	public void run() {
 		int connected = 0;

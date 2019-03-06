@@ -20,6 +20,7 @@ public class ServerMessageHandlingThread implements Runnable{
 		outMessages = out;
 	}
 	
+	// run method for thread to take messages from incoming queue and put on outgoing queue
 	@Override
 	public void run() {
 		System.out.println("*** Server Message Handling Thread Started! ***");

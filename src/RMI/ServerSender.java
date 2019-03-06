@@ -1,30 +1,21 @@
 package RMI;
 
-import java.beans.PropertyChangeEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONObject;
 
 public class ServerSender implements Runnable{
-//	private List<RMISender> clients = new ArrayList<>();
 	ServerGrapher server; 
 	private Socket socket;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	private LinkedBlockingQueue<JSONObject> messages;
 	
+	// constructor for serversender which sets up connection with its corresponding socket and starts a reading thread
 	public ServerSender(Socket so, LinkedBlockingQueue<JSONObject> m){
 		socket = so;
 		messages = m;
@@ -40,6 +31,7 @@ public class ServerSender implements Runnable{
 		readingThread.start();
 	}
 	
+	// run method for thread to take all incoming messages and put them on the incoming message queue
 	public void run(){
 		System.out.println("*** Connected: " + socket + " ***");
 		try {
@@ -55,6 +47,7 @@ public class ServerSender implements Runnable{
         }
 	}
 	
+	// method called to write to the socket
 	public void sendMessage(JSONObject message){
 		try {
 			out.writeObject(message);

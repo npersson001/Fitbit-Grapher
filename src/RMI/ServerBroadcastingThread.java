@@ -4,7 +4,6 @@
  */
 package RMI;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,6 +21,7 @@ private List<ServerSender> clientList;
 		clientList = clients;
 	}
 	
+	// run method for the thread to broadcast all messages on the outgoing queue to all clients
 	@Override
 	public void run() {
 		System.out.println("*** Server Broadcasting Thread Started! ***");
