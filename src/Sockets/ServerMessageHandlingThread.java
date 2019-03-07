@@ -2,7 +2,7 @@
  * @author Nils Persson
  * @date 2019-Feb-26 3:56:26 PM 
  */
-package RMI;
+package Sockets;
 
 import java.util.concurrent.LinkedBlockingQueue;
 

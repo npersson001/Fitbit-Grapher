@@ -2,7 +2,7 @@
  * @author Nils Persson
  * @date 2019-Feb-06 10:05:53 AM 
  */
-package RMI;
+package Sockets;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

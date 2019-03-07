@@ -2,7 +2,7 @@
  * @author Nils Persson
  * @date 2019-Feb-26 3:59:25 PM 
  */
-package RMI;
+package Sockets;
 
 import java.io.IOException;
 import java.net.ServerSocket;
