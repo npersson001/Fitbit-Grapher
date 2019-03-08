@@ -18,7 +18,7 @@ The Fitbit files will be provided for you and will look similar to this: heart_r
 
 For the second task you must take the **JSONObject**s that you parsed in the previous task and graph them using AWT/Swing (documentation avaiable [here](https://docs.oracle.com/javase/7/docs/api/java/awt/package-summary.html) and [here](https://docs.oracle.com/javase/7/docs/api/javax/swing/package-summary.html)).  Swing is newer and more robust, however, either are acceptable.  
 
-The final product should in some way graph the change in time of the heart rate of the user.  An example is shown below.  Notice that because of the small change in time between each datapoint, each pixel to the right displays a new heart rate, so it need not be to scalse. 
+The final product should in some way graph the change in time of the heart rate of the user.  An example is shown below.  Notice that because of the small change in time between each datapoint, each pixel to the right displays a new heart rate, so it need not be to scale. 
 ![Heart Rate Graph](https://user-images.githubusercontent.com/15836110/54060492-e6081780-41ca-11e9-92b9-3c9ddf985938.PNG)
 
 ---------------------------------------
