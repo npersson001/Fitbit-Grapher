@@ -25,7 +25,7 @@ The final product should in some way graph the change in time of the heart rate 
 
 ## Part 2
 
-The following tasks will revolve around distributing the local simulation you created in **Part 1**.
+The following tasks will revolves around distributing the local simulation you created in **Part 1**.
 
 ### Task 1
 
