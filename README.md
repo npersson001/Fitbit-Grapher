@@ -10,7 +10,7 @@ Please complete the following tasks over the course of your time participating i
 
 ### Task 1
 
-For the first task in this study you will be responsible for taking input from a Fitbit file containing **JSONObject**s.  This will require you to parse the Fitbit file using a **JSONParser** object (documentation available [here](https://jar-download.com/artifacts/com.github.cliftonlabs/json-simple/2.1.2/documentation)) or any other parsing method of your choice.  You can store the **jSONObject**s in some type of data structure, most likely a **List**.  
+For the first task in this study you will be responsible for taking input from a Fitbit file containing **JSONObject**s.  This will require you to parse the Fitbit file using a **JSONParser** object (documentation available [here](https://jar-download.com/artifacts/com.github.cliftonlabs/json-simple/2.1.2/documentation)) or any other parsing method of your choice.  You can store the **JSONObject**s in some type of data structure, most likely a **List**.  
 
 The Fitbit files will be provided for you and will look similar to this: heart_rate-2019-01-17.json, heart_rate-2019-01-19.json, etc.  For this first task choose one of the files provided to parse. 
 
@@ -39,7 +39,7 @@ Create an object that implements **Runnable** (documentation [here](https://docs
 
 ### Task 3
 
-Create a thread on the server side that broadcasts the **JSONObject** received by the connection object.  In order to support this, create an object that implements runnable that takes **JSONObject**s off of a **LinkedBlockingQueue** (documentation [here](https://docs.oracle.com/javase/8/docs/api/?java/util/concurrent/LinkedBlockingQueue.html)) and sends them to the client in order.  Note that the server's connection object must now put all incoming **JSONObject**s on this **LinkedBlockingQueue** and both objects/threads must have access to this queue somehow.  
+Create a thread on the server side that broadcasts the **JSONObject** received by the connection object/thread.  In order to support this, create an object that implements **Runnable** that takes **JSONObject**s off of a **LinkedBlockingQueue** (documentation [here](https://docs.oracle.com/javase/8/docs/api/?java/util/concurrent/LinkedBlockingQueue.html)) and sends them to the client in order.  Note that the server's connection object/thread must now put all incoming **JSONObject**s on this **LinkedBlockingQueue** and both objects/threads must have access to this queue somehow.  
 
 
 
