@@ -31,7 +31,7 @@ The following tasks will revolves around distributing the local simulation you c
 
 In this task you will create a **Socket** connection between a client and a server.  Luckily, Java's **java.net** package makes this relatively easy (documentation available [here](https://docs.oracle.com/javase/7/docs/api/java/net/package-summary.html)).  
 
-To accomplish this, create a class for your client and your server.  The client object is to have access to the JSON file that was parsed in Part 1 Task 1.  For both the server and client create an object that will represent their connection to each other (ie. it will have the **Socket** connection).
+To accomplish this, create a class for your client and your server.  The client is to have access to the JSON file that was parsed in Part 1 Task 1.  For both the server and client create an object that will represent their connection to each other (ie. it will have the **Socket** connection).
 
 ### Task 2
 
