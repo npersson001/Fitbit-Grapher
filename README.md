@@ -35,16 +35,13 @@ To accomplish this, create a class for your client and your server.  The client 
 
 ### Task 2
 
-Create an object that implements **Runnable** (documentation [here](https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html)), so that you can create an accepting thread on the server side.  This thread will listen for a connection request from the client and create the object representing this connection when it receives the request.  This means you should make the server's connection object also implement **Runnable** and spawn a thread for it in the accepting thread.  
+In the second task you will create an object that implements **Runnable** (documentation [here](https://docs.oracle.com/javase/7/docs/api/java/lang/Runnable.html)), so that you can create an accepting thread on the server side.  This thread will listen for a connection request from the client and create the object representing this connection when it receives the request.  This means you should make the server's connection object also implement **Runnable** and spawn a thread for it in the accepting thread.  
 
 ### Task 3
 
-Create a thread on the server side that broadcasts the **JSONObject** received by the connection object/thread.  In order to support this, create an object that implements **Runnable** that takes **JSONObject**s off of a **LinkedBlockingQueue** (documentation [here](https://docs.oracle.com/javase/8/docs/api/?java/util/concurrent/LinkedBlockingQueue.html)) and sends them to the client in order.  Note that the server's connection object/thread must now put all incoming **JSONObject**s on this **LinkedBlockingQueue** and both objects/threads must have access to this queue somehow.  
+In this task you will create a thread on the server side that broadcasts the **JSONObject** received by the connection object/thread.  In order to support this, create an object that implements **Runnable** that takes **JSONObject**s off of a **LinkedBlockingQueue** (documentation [here](https://docs.oracle.com/javase/8/docs/api/?java/util/concurrent/LinkedBlockingQueue.html)) and sends them to the client in order.  Note that the server's connection object/thread must now put all incoming **JSONObject**s on this **LinkedBlockingQueue** and both objects/threads must have access to this queue somehow.  
 
+### Task 4
 
-
-
-extra:
-
-
-The third task involves distributing the simple simulation created in tasks 1 and 2.  You must accomplish this using sockets.  Luckily, Java's **java.net** package makes this relatively easy (documentation available [here](https://docs.oracle.com/javase/7/docs/api/java/net/package-summary.html)).  Your goal is to send each **JSONObject** you parsed in task 1 to your server.  The server must then echo the **JSONObject** back to the client.  The client will then graph the heart rate data as in task 2.
+In the fourth task you must support multiple clients.  You will create a second client that uses a different Fitbit file.  Your two clients will send their **JSONObject**s over their **Socket** connection to the server which must now broadcast every **JSONObject** it receives to all clients.  Each client must now graph the heart rate of each user (the data from each client separately).  The final graph should look similar to the one below.
+![Heart Rate Graph](https://user-images.githubusercontent.com/15836110/54060492-e6081780-41ca-11e9-92b9-3c9ddf985938.PNG)
