@@ -44,4 +44,4 @@ In this task you will create a thread on the server side that broadcasts the **J
 ### Task 4
 
 In the fourth task you must support multiple clients.  You will create a second client that uses a different Fitbit file.  Your two clients will send their **JSONObject**s over their **Socket** connection to the server which must now broadcast every **JSONObject** it receives to all clients.  Each client must now graph the heart rate of each user (the data from each client separately).  The final graph should look similar to the one below.
-![Heart Rate Graph_Dual](https://user-images.githubusercontent.com/15836110/54462751-393c1600-4747-11e9-8a48-2daa8a430b00.PNG)
+![Heart Rate Graph_Dual](https://user-images.githubusercontent.com/15836110/54462984-e9aa1a00-4747-11e9-92a1-f272e482ee73.PNG)
